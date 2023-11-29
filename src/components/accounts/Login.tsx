@@ -1,9 +1,13 @@
 import { Box, TextField, Button } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { ILoginDto } from "../../models/login-user";
+import { ILoginDto } from "../../types/login-user";
+import { AuthService } from "../../services/auth.service";
+import { setTokenFromLocalStorage } from "../../services/localStorage.helper";
+import { useNavigate } from "react-router-dom";
 
 
 const Login = () => {
+    const navigate=useNavigate();
     const {
         register,//to attrack changes of form inputs
         handleSubmit, //onSubmit event handler
@@ -11,8 +15,14 @@ const Login = () => {
 
     }=useForm<ILoginDto>();
 
-    const onSubmit=(user:ILoginDto)=>{
-            alert(user.username);
+    const onSubmit=async (user:ILoginDto)=>{
+            // alert(user.username);
+            const token=await AuthService.login(user);
+            if (token){
+                setTokenFromLocalStorage("token",token);
+                alert(token);
+                navigate("/movies");
+            }
     }
     return (
         <>
